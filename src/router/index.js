@@ -27,8 +27,8 @@ export default function IndexRouter() {
     useEffect(() => {
         //
         Promise.all([
-            axios.get("http://localhost:8000/rights"),
-            axios.get("http://localhost:8000/children"),
+            axios.get("rights"),
+            axios.get("children"),
         ]).then(res => {
             // console.log(...res[0].data,...res[1].data)
             setBackRouteList([...res[0].data, ...res[1].data])
@@ -58,9 +58,11 @@ export default function IndexRouter() {
     }
     const checkUserPermission = (item) => {
         //判断当前用户的权限列表和item的key的
-        
+        if(token!==null){
             const {role:{rights:{checked}}} =JSON.parse(token)
             return checked.includes(item.key)
+        }
+            
         
     }
 

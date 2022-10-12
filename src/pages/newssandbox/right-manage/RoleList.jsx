@@ -14,11 +14,11 @@ export default function RoleList() {
   //isOpen是否能设置树状图
   const [isOpen, setisOpen] = useState(false)
   useEffect(() => {
-    axios.get("http://localhost:8000/roles").then(res => {
+    axios.get("roles").then(res => {
       setdataSource(res.data)
     })
 
-    axios.get("http://localhost:8000/rights?_embed=children").then(res => {
+    axios.get("rights?_embed=children").then(res => {
       console.log(res.data)
       //树状图需要title对象在后端的label上
       const list = res.data
@@ -81,7 +81,7 @@ export default function RoleList() {
   }
   const deleteMethod = (item) => {
     setdataSource(dataSource.filter(data => data.id !== item.id))
-    axios.delete(`http://localhost:8000/roles/${item.id}`)
+    axios.delete(`roles/${item.id}`)
   }
 
   //点击ok后，放送后端同步数据
@@ -100,7 +100,7 @@ export default function RoleList() {
       }
       return i
     }))
-    axios.patch(`http://localhost:8000/roles/${currentId}`,
+    axios.patch(`roles/${currentId}`,
       {
         rights: currentRights
       }

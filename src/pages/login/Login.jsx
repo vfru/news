@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
 import './Login.css'
-import ParticlesBg from 'particles-bg'
+// import ParticlesBg from 'particles-bg'
 import axios from 'axios';
 
 export default function Login() {
@@ -11,7 +11,7 @@ export default function Login() {
 
   const onFinish = (values) => {
     // console.log(values);
-    axios.get(`http://localhost:8000/users?username=${values.username}&password=${values.password}&roleState=true&_expand=role`)
+    axios.get(`users?username=${values.username}&password=${values.password}&roleState=true&_expand=role`)
     .then(res=>{
       // console.log(res.data)
       if (res.data.length === 0) {
@@ -28,7 +28,7 @@ export default function Login() {
 
   return (
     <div style={{ background: "rgb(35,39,65)", height: "100%" }} >
-      <ParticlesBg
+      {/* <ParticlesBg
         params={{
           polygon: {
             enable: true,
@@ -39,7 +39,7 @@ export default function Login() {
             url: 'path/to/svg.svg',
             scr: '/logo192.png',
           }
-        }} />
+        }} /> */}
       <div className='formContainer' >
         <div className='logintitle' >全球新闻发布管理系统</div>
         <Form

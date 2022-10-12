@@ -30,7 +30,7 @@ const iconList = {
 export default function SideMenu() {
   const [menu, setMenu] = useState([])
   useEffect(() => {
-    axios.get("http://localhost:8000/rights?_embed=children").then(res => {
+    axios.get("rights?_embed=children").then(res => {
       // console.log(res.data)
       setMenu(res.data)
     })
@@ -61,8 +61,8 @@ export default function SideMenu() {
           })
         }
       }  
-      //首页
-      if (checked.includes(item.key)) {
+      //首页，或者其他的被权限禁用时
+      if (checked.includes(item.key)&& item.pagepermission) {
         return {
           key: item.key,
           label: item.label,

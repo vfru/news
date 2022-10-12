@@ -33,7 +33,7 @@ export default function UserList() {
       "3": "区域编辑",
     }
     //现有的用户数据
-    axios.get("http://localhost:8000/users?_expand=role").then(res => {
+    axios.get("users?_expand=role").then(res => {
       const list = res.data
       setdataSource(roleObj[roleId] === "超级管理员" ? list : [
         ...list.filter(item => item.username === username),
@@ -41,12 +41,12 @@ export default function UserList() {
       ])
     })
     //区域数据
-    axios.get("http://localhost:8000/regions").then(res => {
+    axios.get("regions").then(res => {
       const list = res.data
       setregionList(list)
     })
     //角色数据
-    axios.get("http://localhost:8000/roles").then(res => {
+    axios.get("roles").then(res => {
       const list = res.data
       setroleList(list)
     })
@@ -148,7 +148,7 @@ export default function UserList() {
     });
   }
   const deleteMethod = (item) => {
-    axios.delete(`http://localhost:8000/users/${item.id}`)
+    axios.delete(`users/${item.id}`)
     setdataSource(dataSource.filter(data => data.id !== item.id))
   }
 
@@ -158,7 +158,7 @@ export default function UserList() {
     item.roleState = !item.roleState
     setdataSource([...dataSource])
     //发送后端修改数据
-    axios.patch(`http://localhost:8000/users/${item.id}`, {
+    axios.patch(`users/${item.id}`, {
       roleState: item.roleState
     })
   }
@@ -172,14 +172,14 @@ export default function UserList() {
       //点击后清除输入框的内容
       addForm.current.resetFields()
       //先post到后端，生成id，再设置dataSource，方便后面的删除和更新
-      axios.post(`http://localhost:8000/users`, {
+      axios.post(`users`, {
         ...value,
         "roleState": true,
         "default": false,
       }).then(res => {
         console.log(res.data)
         //重新请求数据
-        axios.get("http://localhost:8000/users?_expand=role").then(res => {
+        axios.get("users?_expand=role").then(res => {
           const list = res.data
           setdataSource(list)
         })
@@ -198,10 +198,10 @@ export default function UserList() {
       //点击后清除输入框的内容
       updateForm.current.resetFields()
 
-      axios.patch(`http://localhost:8000/users/${updateUserId.id}`, value).then(res => {
+      axios.patch(`users/${updateUserId.id}`, value).then(res => {
         console.log(res.data)
         //重新请求数据
-        axios.get("http://localhost:8000/users?_expand=role").then(res => {
+        axios.get("users?_expand=role").then(res => {
           const list = res.data
           setdataSource(list)
         })

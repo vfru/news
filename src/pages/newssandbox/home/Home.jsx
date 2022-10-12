@@ -32,7 +32,7 @@ export default function Home() {
     // })
 
     //_expand
-    axios.get("http://localhost:8000/comments?_expand=post").then(res=>{
+    axios.get("comments?_expand=post").then(res=>{
       // console.log(res.data)
     })
 
