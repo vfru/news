@@ -11,6 +11,7 @@ import NotFound from '../pages/NotFound'
 import NewsAdd from '../pages/newssandbox/news-manage/NewsAdd'
 import NewsDraft from '../pages/newssandbox/news-manage/NewsDraft'
 import NewsCategory from '../pages/newssandbox/news-manage/NewsCategory'
+import NewsPreview from '../pages/newssandbox/news-manage/NewsPreview'
 import Audit from '../pages/newssandbox/audit-manage/Audit'
 import AuditList from '../pages/newssandbox/audit-manage/AuditList'
 import Unpublished from '../pages/newssandbox/publish-manage/Unpublished'
@@ -43,6 +44,7 @@ export default function IndexRouter() {
         '/news-manage/add': <NewsAdd />,
         '/news-manage/draft': <NewsDraft />,
         '/news-manage/category': <NewsCategory />,
+        '/news-manage/preview/:id': <NewsPreview />,
         "/audit-manage/audit": <Audit />,
         "/audit-manage/list": <AuditList />,
         "/publish-manage/unpublished": <Unpublished />,
@@ -51,19 +53,19 @@ export default function IndexRouter() {
     }
 
     const token = localStorage.getItem('token')
-    
+
     const checkRoute = (item) => {
-        //权限列表中的pagepermisson是1的时候才支持渲染
-        return localRouterMap[item.key] && item.pagepermission
+        //权限列表中的pagepermisson是1的时候才支持渲染,或者是显示修改页面
+        return localRouterMap[item.key] && (item.pagepermission||item.routepermission)
     }
     const checkUserPermission = (item) => {
         //判断当前用户的权限列表和item的key的
-        if(token!==null){
-            const {role:{rights:{checked}}} =JSON.parse(token)
+        if (token !== null) {
+            const { role: { rights: { checked } } } = JSON.parse(token)
             return checked.includes(item.key)
         }
-            
-        
+
+
     }
 
     const routes = [
