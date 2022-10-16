@@ -12,6 +12,7 @@ import NewsAdd from '../pages/newssandbox/news-manage/NewsAdd'
 import NewsDraft from '../pages/newssandbox/news-manage/NewsDraft'
 import NewsCategory from '../pages/newssandbox/news-manage/NewsCategory'
 import NewsPreview from '../pages/newssandbox/news-manage/NewsPreview'
+import NewsUpdate from '../pages/newssandbox/news-manage/NewsUpdate'
 import Audit from '../pages/newssandbox/audit-manage/Audit'
 import AuditList from '../pages/newssandbox/audit-manage/AuditList'
 import Unpublished from '../pages/newssandbox/publish-manage/Unpublished'
@@ -45,6 +46,7 @@ export default function IndexRouter() {
         '/news-manage/draft': <NewsDraft />,
         '/news-manage/category': <NewsCategory />,
         '/news-manage/preview/:id': <NewsPreview />,
+        '/news-manage/update/:id':<NewsUpdate />,
         "/audit-manage/audit": <Audit />,
         "/audit-manage/list": <AuditList />,
         "/publish-manage/unpublished": <Unpublished />,

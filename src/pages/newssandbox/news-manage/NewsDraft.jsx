@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Table, Button, Modal } from 'antd'
-import { DeleteOutlined, UnorderedListOutlined, ExclamationCircleOutlined,VerticalAlignTopOutlined  } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined,VerticalAlignTopOutlined  } from '@ant-design/icons';
 import axios from 'axios'
 export default function NewsDraft() {
   //获取后端草稿箱数据，用table组件中的数据展示
   const [dataSource, setdataSource] = useState([])
   const { username } = JSON.parse(localStorage.getItem('token'))
+  const navigate = useNavigate()
   useEffect(() => {
     axios.get(`news?author=${username}&auditState=0&_expand=category`).then(res => {
       console.log(res.data)
@@ -28,7 +30,7 @@ export default function NewsDraft() {
       title: '新闻标题',
       dataIndex: 'label',
       render:(label,item)=>{
-       return <a href={`news-manage/preview/${item.id}`} >{label}</a>
+       return <a href={`/news-manage/preview/${item.id}`} >{label}</a>
       }
     },
     {
@@ -46,11 +48,13 @@ export default function NewsDraft() {
       title: '操作',
       render: (item) => {
         return <div>
-          <Button type='primary' shape="circle" icon={<UnorderedListOutlined />}
+          <Button  shape="circle" icon={<EditOutlined />}
             onClick={() => {
+              navigate(`/news-manage/update/${item.id}`)
             }} />
             <Button type='primary' shape="circle" icon={<VerticalAlignTopOutlined  />}
             onClick={() => {
+
             }} />
           <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => confirmDelete(item)} />
           

@@ -6,8 +6,8 @@ export default function NewsEditor(props) {
     const [editor, setEditor] = useState(null)
     // 编辑器内容
     const [html, setHtml] = useState('')
-     // 工具栏配置
-     const toolbarConfig = { }  
+    // 工具栏配置
+    const toolbarConfig = {}
     // 编辑器配置
     const editorConfig = {
         placeholder: '请输入内容...',
@@ -18,12 +18,18 @@ export default function NewsEditor(props) {
 
     // 及时销毁 editor ，重要！
     useEffect(() => {
+        //接收content
+        setHtml(props.content)
+        //把值传回父组件
+        props.getContent(props.content)
+        // console.log(props.content)
+
         return () => {
             if (editor == null) return
             editor.destroy()
             setEditor(null)
         }
-    }, [editor])
+    }, [editor, props.content])
     return (
         <div>
             <div style={{ border: '1px solid #ccc', zIndex: 100 }}>
@@ -39,18 +45,19 @@ export default function NewsEditor(props) {
                     defaultConfig={editorConfig}
                     value={html}
                     onCreated={setEditor}
-                    onChange={editor => setHtml(editor.getHtml())}
+                    onChange={
+                        editor => {setHtml(editor.getHtml())
+                    }}
                     mode="default"
                     style={{ height: '500px', overflowY: 'hidden' }}
                 />
             </div>
             {/* 底下显示富文本 */}
-            <div >
                 {/* {html} */}
-                { 
-                    props.getContent(html)
-                }
-            </div>
+
+            {
+                props.getContent(html)
+            }
         </div>
     )
 }

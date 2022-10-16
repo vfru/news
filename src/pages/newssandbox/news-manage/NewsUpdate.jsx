@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { PageHeader, Steps, Button, Form, Input, Select, message, notification } from 'antd';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import './News.moudule.css'
 import axios from 'axios';
 import NewsEditor from '../../../components/news-manage/NewsEditor';
@@ -17,7 +17,7 @@ const layout = {
   },
 };
 
-export default function NewsAdd() {
+export default function NewsUpdate() {
   //ref
   const NewsForm = useRef(null)
   //步骤条到那个步骤
@@ -32,11 +32,25 @@ export default function NewsAdd() {
   const [content, setContent] = useState('')
 
   const navigate = useNavigate()
+
+  const params = useParams()
   useEffect(() => {
     axios.get('categories').then(res => {
       setcategories(res.data)
     })
-  }, [])
+    //得到原来的新闻
+    axios.get(`news/${params.id}?_expand=category&_expand=role`).then(res => {
+      // setOldnews(res.data)
+
+      //从请求的数据中解构，再通过ref的方法设置显示的值
+      let { label, categoryId, content } = res.data
+      NewsForm.current.setFieldsValue({
+        label: label,
+        categoryId: categoryId,
+      })
+      setContent(content)
+    })
+  }, [params.id])
 
   const onFinish = (values) => {
     console.log(values);
@@ -45,21 +59,13 @@ export default function NewsAdd() {
   const onGenderChange = (value) => {
 
   };
-  const User = JSON.parse(localStorage.getItem('token'))
   const handleSave = (auditState) => {
 
-    axios.post('news',
+    axios.patch(`news/${params.id}`,
       {
         ...formValue,
         "content": content,
-        "region": User.region ? User.region : "全球",
-        "author": User.username,
-        "roleId": User.roleId,
         "auditState": auditState,
-        "publishState": 0,
-        "createTime": Date.now(),
-        "star": 0,
-        "view": 0,
         // "publishTime": 0
       }
     ).then(res => {
@@ -68,8 +74,8 @@ export default function NewsAdd() {
       //右下角弹出提醒
       notification.info({
         message: `通知`,
-        description:`你可以到${auditState === 0 ? '草稿箱':'审核列表'}中查看`,
-        placement:'bottomRight',
+        description: `你可以到${auditState === 0 ? '草稿箱' : '审核列表'}中查看`,
+        placement: 'bottomRight',
       });
     })
   }
@@ -80,7 +86,8 @@ export default function NewsAdd() {
     <div>
       <PageHeader
         className="site-page-header"
-        title="撰写新闻"
+        title="更新新闻"
+        onBack={() => navigate(-1)}
       />
       <Steps current={current}>
         <Step title="基本信息" description="新闻标题,新闻分类" />
@@ -116,11 +123,14 @@ export default function NewsAdd() {
         </Form>
       </div>
       <div className={current === 1 ? '' : "active"} >
-        <NewsEditor getContent={(html) => {
-          //保存富文本,发送后端，报警告需要优化
-          setContent(html)
-          // console.log(html)
-        }} />
+        <NewsEditor
+        //把获得的原来的新闻内容传给子组件
+          content={content}
+          getContent={(html) => {
+            //保存富文本,发送后端，报警告需要优化
+            setContent(html)
+            // console.log(html)
+          }} />
       </div>
       <div className={current === 2 ? '' : "active"} ></div>
 
