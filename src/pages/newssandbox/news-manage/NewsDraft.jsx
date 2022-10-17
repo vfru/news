@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Table, Button, Modal } from 'antd'
+import { Table, Button, Modal,notification } from 'antd'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined,VerticalAlignTopOutlined  } from '@ant-design/icons';
 import axios from 'axios'
 export default function NewsDraft() {
@@ -48,20 +48,36 @@ export default function NewsDraft() {
       title: '操作',
       render: (item) => {
         return <div>
+          {/* 编辑 */}
           <Button  shape="circle" icon={<EditOutlined />}
             onClick={() => {
               navigate(`/news-manage/update/${item.id}`)
             }} />
+            {/* 提交审核 */}
             <Button type='primary' shape="circle" icon={<VerticalAlignTopOutlined  />}
-            onClick={() => {
-
-            }} />
+            onClick={() => toExamine(item.id)} />
+            {/* 删除 */}
           <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => confirmDelete(item)} />
           
         </div>
       }
     },
   ]
+  //提交审核
+  const toExamine=(id)=>{
+    axios.patch(`news/${id}`,{
+      auditState:1
+    }).then(res=>{
+      //跳转到审核页面
+      navigate('/audit-manage/list')
+       //右下角弹出提醒
+       notification.info({
+        message: `通知`,
+        description: `你可以到审核列表中查看`,
+        placement: 'bottomRight',
+      });
+    })
+  }
   //点击删除后，弹出确认框
   const confirmDelete = (item) => {
     Modal.confirm({
