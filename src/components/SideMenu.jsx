@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { UserOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom'
+import { connect } from 'react-redux'
 import './index.css'
 import axios from 'axios'
 const { Sider } = Layout;
@@ -27,7 +28,7 @@ const iconList = {
 }
 
 
-export default function SideMenu() {
+ function SideMenu(props) {
   const [menu, setMenu] = useState([])
   useEffect(() => {
     axios.get("rights?_embed=children").then(res => {
@@ -50,7 +51,7 @@ export default function SideMenu() {
           icon: iconList[item.key],
           label: item.label,
           children: item.children.map(item => {
-            if (item.pagepermission) {
+            if (item.pagepermission && checked.includes(item.key)) {
               return {
                 key: item.key,
                 label: item.label,
@@ -93,7 +94,8 @@ export default function SideMenu() {
   }
 
   return (
-    <Sider trigger={null} collapsible collapsed={false} >
+    // collapsed是否折叠,通过rudux中的isCollapsed控制
+    <Sider trigger={null} collapsible collapsed={props.isCollapsed} >
       <div style={{ display: "flex", height: "100%", "flexDirection": "column" }} >
         <div className="logo" >全球新闻发布管理系统</div>
         <div style={{ flex: 1, "overflow": "auto" }} >
@@ -105,3 +107,14 @@ export default function SideMenu() {
     </Sider>
   )
 }
+//解构出CollapsedReducer中的isCollapsed
+const mapStateToprops = ({ CollapsedReducer: { isCollapsed } }) => {
+  //state中有redux中
+  return {
+    isCollapsed
+  }
+}
+
+export default connect(
+  mapStateToprops,
+)(SideMenu)
