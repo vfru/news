@@ -3,7 +3,7 @@ import _ from 'lodash'
 import React, { useEffect, useState, useRef } from 'react'
 // import {Button} from 'antd'
 import axios from 'axios'
-import { Card, Col, Row, List, Avatar } from 'antd';
+import { Card, Col, Row, List, Avatar, Drawer } from 'antd';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons'
 const { Meta } = Card;
 
@@ -45,7 +45,13 @@ export default function Home() {
   // }
   const [viewList, setviewList] = useState([])
   const [starList, setstarList] = useState([])
+  // 图表组件
   const barRef = useRef()
+  const pieRef = useRef()
+  const [pieChart, setpieChart] = useState(null)
+  const [allList,setallList] = useState([])
+  //抽屉的打开控制
+  const [open, setopen] = useState(false)
   useEffect(() => {
     //_sort按少到多正顺序排序，_order=desc反序，_limit=6限制为6个
     axios.get(`news?publishState=2&_expand=category&_sort=view&_order=desc&_limit=6`).then(res => {
@@ -64,7 +70,11 @@ export default function Home() {
       // console.log(res.data)
       // _.groupBy分类
       renderBarView(_.groupBy(res.data, item => item.category.label))
+      setallList(res.data)
     })
+    return () => {
+      window.onresize = null
+    }
   }, [])
   const renderBarView = (obj) => {
     // 基于准备好的dom，初始化echarts实例
@@ -79,23 +89,98 @@ export default function Home() {
       legend: {
         data: ['数量']
       },
+      // x轴
       xAxis: {
-        data: Object.keys(obj)
+        data: Object.keys(obj),
+        axisLabel: {
+          rotate: "60",
+          // 无论多小都显示
+          interval: 0
+        }
       },
-      yAxis: {},
+      yAxis: {
+        //最小间隔
+        minInterval: 1
+      },
       series: [
         {
           name: '数量',
           type: 'bar',
           // 映射长度
-          data: Object.values(obj).map(item=>item.length)
+          data: Object.values(obj).map(item => item.length)
         }
       ]
     };
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
+    //每次改变大小都调用
+    window.onresize = () => {
+      //随窗口大小自适应重新生成图形
+      myChart.resize()
+    }
   }
+  const renderPieView = (obj) => {
+    // 数据处理
+    var currentList = allList.filter(item=>item.author===username)
+    // console.log(currentList)
+    // _.groupBy分类
+    var groupByObj = _.groupBy(currentList, item => item.category.label)
+    // console.log(groupByObj)
+    var list = []
+    for(var i in groupByObj){
+      list.push({
+        name:i,
+        value:groupByObj[i].length
+      })
+    }
+    // console.log(list)
+
+    var myChart;
+    // 第一次进来时
+    if (!pieChart) {
+      myChart = echarts.init(pieRef.current);
+      setpieChart(myChart)
+    } else {
+      // 之后进来
+      myChart = pieChart
+    }
+    var option;
+
+    option = {
+      title: {
+        text: '当前用户新闻分类图示',
+        // subtext: 'Fake Data',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left'
+      },
+      series: [
+        {
+          name: '发布数量',
+          type: 'pie',
+          radius: '50%',
+          data: list,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    };
+
+    option && myChart.setOption(option);
+
+  }
+
   return (
     <div>
       {/* <Button onClick={ajax} >Button</Button> */}
@@ -133,7 +218,14 @@ export default function Home() {
                 />
               }
               actions={[
-                <SettingOutlined key="setting" />,
+                <SettingOutlined key="setting" onClick={() => {
+                  // 初始化饼状图，需异步
+                  setopen(true)
+                  setTimeout(() => {
+
+                    renderPieView()
+                  }, 0)
+                }} />,
                 <EditOutlined key="edit" />,
                 <EllipsisOutlined key="ellipsis" />,
               ]}
@@ -151,7 +243,21 @@ export default function Home() {
             </Card>
           </Col>
         </Row>
-        {/* 高度400，离上方30，宽度100% */}
+        {/* 抽屉组件 */}
+        <Drawer
+          // 宽度
+          width="500px"
+          title="个人新闻分类"
+          placement="right"
+          // 允许关掉
+          closable={true}
+          onClose={() => {
+            setopen(false)
+          }} open={open}  >
+          {/* 饼状图 */}
+          <div ref={pieRef} style={{ height: "400px", marginTopL: "30px", width: '100%' }}></div>
+        </Drawer>
+        {/*柱状图 高度400，离上方30，宽度100% */}
         <div ref={barRef} style={{ height: "400px", marginTopL: "30px", width: '100%' }}></div>
       </div>
     </div>

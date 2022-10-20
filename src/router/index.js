@@ -21,6 +21,8 @@ import Sunset from '../pages/newssandbox/publish-manage/Sunset'
 import { Layout} from 'antd';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import News from '../pages/news/News';
+import Detail from '../pages/news/Detail';
 // import routes from './routes'
 
 
@@ -51,7 +53,9 @@ export default function IndexRouter() {
         "/audit-manage/list": <AuditList />,
         "/publish-manage/unpublished": <Unpublished />,
         "/publish-manage/published": <Published />,
-        "/publish-manage/sunset": <Sunset />
+        "/publish-manage/sunset": <Sunset />,
+        "/news":<News/>,
+        "/detail/:id":<Detail/>
     }
 
     const token = localStorage.getItem('token')
@@ -71,6 +75,12 @@ export default function IndexRouter() {
     }
 
     const routes = [
+        {
+            path: '/news', element: <News />
+        },
+        {
+            path: '/detail/:id', element: <Detail />
+        },
         {
             path: '/login', element: <Login />
         },
