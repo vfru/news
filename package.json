@@ -12,6 +12,7 @@
     "antd": "^4.23.2",
     "axios": "^0.27.2",
     "draft-js": "^0.11.7",
+    "echarts": "^5.4.0",
     "http-proxy-middleware": "^2.0.6",
     "moment": "^2.29.4",
     "particles-bg": "^2.5.5",
